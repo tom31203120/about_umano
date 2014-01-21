@@ -79,7 +79,7 @@ def get_by_ids(label):
         print "=========error     ================"+label['name']
         pass
 
-catagraty = catagraty[2:]
-get_by_ids(catagraty)
+catagraty = catagraty[5:]
+#get_by_ids(catagraty)
 for one in catagraty:
     get_by_ids(one)

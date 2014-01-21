@@ -13,7 +13,7 @@ from tornado import httpclient, gen, options
 
 logger = logging.getLogger(__name__)
 
-DW_TIMEOUT = 10
+DW_TIMEOUT = 100
 E_OK = 0
 
 def make_url(base, params={}):

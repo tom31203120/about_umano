@@ -133,6 +133,7 @@ data = dic['data']
 #for d in data:
     #print d
     #orm.label.add(d)
-print orm.label.get_all()
+from pprint import pprint
+pprint(orm.label.get_all())
 
 

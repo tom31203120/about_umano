@@ -14,6 +14,7 @@ from tornado import httpclient, gen, options
 logger = logging.getLogger(__name__)
 
 DW_TIMEOUT = 10
+E_OK = 0
 
 def make_url(base, params={}):
     str_params = {k: unicode(v).encode('utf8') for k, v in params.iteritems()}
@@ -38,10 +39,34 @@ def sync_request(api_uri, params={}):
         logger.error('%s\n%s\n', url, str(e))
     else:
         res = json.loads(response.body)
-        if res['error'] == 'E_OK':
-            return res['result']
+        if res['error'] == E_OK:
+            return res
         else:
-            logger.error('%s\n%s\n', url, res['msg'])
+            logger.error('%s\n%s\n', url, res['data'])
+    finally:
+        http_client.close()
+
+def sync_request_1(url):
+    '''
+    params is a dict of remote method's arguments
+    example:
+        sync_request('activity', {'ActivityName:"每日登录送积分"'})
+    '''
+    http_client = httpclient.HTTPClient()
+    try:
+        print url
+        response = http_client.fetch(url,
+                                     method='GET',
+                                     request_timeout=DW_TIMEOUT
+                                     )
+    except httpclient.HTTPError as e:
+        logger.error('%s\n%s\n', url, str(e))
+    else:
+        res = json.loads(response.body)
+        if res['error'] == E_OK:
+            return res
+        else:
+            logger.error('%s\n%s\n', url, res['data'])
     finally:
         http_client.close()
 
@@ -66,10 +91,10 @@ def handle_request(response, url, callback):
         response.rethrow()
     else:
         res = json.loads(response.body)
-        if res['error'] != 'E_OK':
-            logger.error('%s\n%s\n', url, res['msg'])
+        if res['error'] != E_OK:
+            logger.error('%s\n%s\n', url, res['data'])
             raise Exception('rpc error:%r' % res)
         else:
-            callback(res['result'])
+            callback(res)
 
 async_task = partial(gen.Task, async_request)
